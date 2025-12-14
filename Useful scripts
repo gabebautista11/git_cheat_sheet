@@ -1,6 +1,7 @@
-Remove all branchs that are not on remote:
-git branch -vv | Where-Object { $_ -match 'gone\]' } | ForEach-Object { $_.Trim().Split()[0] } | ForEach-Object { git branch -D $_ }
+# Remove all branchs that are not on remote:
+  ### PWSH:
+    git fetch --prune; $r=git branch -r|%{$_.Trim()-replace'^origin/',''}; git branch|%{$_.Trim().TrimStart('* ')}|?{$_-ne'main' -and $r-notcontains$_}|%{git branch -D $_}
 
+  ### BASH:
+    git fetch --prune && git branch | sed 's/^\* //' | grep -v '^main$' | while read b; do git show-ref --verify --quiet refs/remotes/origin/$b || git branch -D "$b"; done
 
-Remove delted remote branches
-git fetch -p
